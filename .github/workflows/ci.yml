@@ -1,0 +1,45 @@
+name: DevOps Monitoring CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r app/requirements.txt
+
+      - name: Test Python syntax
+        run: python3 -m py_compile app/ping_check.py
+
+      - name: Check imports
+        run: |
+          python3 -c "
+          import subprocess, datetime, json, os, time
+          print('OK — все модули импортируются')
+          "
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t ping-monitor ./app
+
+      - name: Verify image
+        run: docker images ping-monitor
