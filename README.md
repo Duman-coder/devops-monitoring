@@ -62,24 +62,26 @@ kubectl get all -n monitoring
 
 ## 📁 Структура проекта
 
+```
 devops-monitoring/
 ├── app/
-│ ├── ping_check.py
-│ ├── Dockerfile
-│ ├── hosts.txt
-│ └── requirements.txt
+│   ├── ping_check.py
+│   ├── Dockerfile
+│   ├── hosts.txt
+│   └── requirements.txt
 ├── k8s/
-│ ├── namespace.yaml
-│ ├── configmap.yaml
-│ ├── deployment.yaml
-│ └── service.yaml
+│   ├── namespace.yaml
+│   ├── configmap.yaml
+│   ├── deployment.yaml
+│   └── service.yaml
 ├── prometheus/
-│ └── prometheus.yml
+│   └── prometheus.yml
 ├── nginx/
-│ └── nginx.conf
+│   └── nginx.conf
 ├── .github/workflows/
-│ └── ci.yml
+│   └── ci.yml
 └── docker-compose.yml
+```
 
 ## ⚙️ Конфигурация
 
