@@ -102,12 +102,6 @@ github.com
 CHECK_INTERVAL=30  # секунды
 ```
 
-Интервал проверки:
-
-```bash
-CHECK_INTERVAL=30  # секунды
-```
-
 ## 👤 Автор
 
 **Duman** — Network Engineer → DevOps Engineer
