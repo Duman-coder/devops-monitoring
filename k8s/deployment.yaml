@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-monitor
+  namespace: monitoring
+  labels:
+    app: ping-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-monitor
+  template:
+    metadata:
+      labels:
+        app: ping-monitor
+    spec:
+      containers:
+      - name: ping-monitor
+        image: ping-monitor:latest
+        imagePullPolicy: Never
+        env:
+        - name: CHECK_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: ping-monitor-config
+              key: CHECK_INTERVAL
+        volumeMounts:
+        - name: hosts-config
+          mountPath: /app/hosts.txt
+          subPath: hosts.txt
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: hosts-config
+        configMap:
+          name: ping-monitor-config
+      - name: logs
+        emptyDir: {}
