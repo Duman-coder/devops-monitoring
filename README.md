@@ -15,15 +15,15 @@
 
 ## 🏗️ Архитектура
 
-**
+```
 ping-monitor (Python)
-↓
+      ↓
 Docker Compose / Kubernetes
-↓
+      ↓
 Prometheus (метрики) → Grafana (дашборды)
-↓
+      ↓
 Nginx (reverse proxy)
-**
+```
 
 ## 🛠️ Стек технологий
 
@@ -89,10 +89,18 @@ devops-monitoring/
 
 Список хостов в файле `app/hosts.txt`:
 
+```
 8.8.8.8
 1.1.1.1
 google.com
 github.com
+```
+
+Интервал проверки:
+
+```bash
+CHECK_INTERVAL=30  # секунды
+```
 
 Интервал проверки:
 
