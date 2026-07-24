@@ -1,3 +1,4 @@
+cat > README.md << 'EOF'
 # 🔍 DevOps Monitoring Platform
 
 ![CI](https://github.com/Duman-coder/devops-monitoring/actions/workflows/ci.yml/badge.svg)
@@ -13,6 +14,7 @@
 ---
 
 ## 🏗️ Архитектура
+
 ping-monitor (Python)
 ↓
 Docker Compose / Kubernetes
@@ -55,7 +57,6 @@ kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
-
 kubectl get all -n monitoring
 ```
 
@@ -63,32 +64,33 @@ kubectl get all -n monitoring
 
 devops-monitoring/
 ├── app/
-│ ├── ping_check.py # Python скрипт мониторинга
-│ ├── Dockerfile # Контейнеризация
-│ ├── hosts.txt # Список хостов для мониторинга
-│ └── requirements.txt # Python зависимости
+│ ├── ping_check.py
+│ ├── Dockerfile
+│ ├── hosts.txt
+│ └── requirements.txt
 ├── k8s/
-│ ├── namespace.yaml # K8s namespace
-│ ├── configmap.yaml # Конфигурация
-│ ├── deployment.yaml # Деплоймент
-│ └── service.yaml # Сервис
+│ ├── namespace.yaml
+│ ├── configmap.yaml
+│ ├── deployment.yaml
+│ └── service.yaml
 ├── prometheus/
-│ └── prometheus.yml # Конфиг Prometheus
+│ └── prometheus.yml
 ├── nginx/
-│ └── nginx.conf # Конфиг Nginx
+│ └── nginx.conf
 ├── .github/workflows/
-│ └── ci.yml # GitHub Actions CI/CD
-└── docker-compose.yml # Оркестрация сервисов
+│ └── ci.yml
+└── docker-compose.yml
 
 ## ⚙️ Конфигурация
 
-Список хостов для мониторинга в файле `app/hosts.txt`:
+Список хостов в файле `app/hosts.txt`:
+
 8.8.8.8
 1.1.1.1
 google.com
 github.com
 
-Интервал проверки задаётся через переменную окружения:
+Интервал проверки:
 
 ```bash
 CHECK_INTERVAL=30  # секунды
@@ -100,3 +102,6 @@ CHECK_INTERVAL=30  # секунды
 
 - GitHub: [@Duman-coder](https://github.com/Duman-coder)
 - Стек: Linux, Python, Docker, Kubernetes, Terraform, Ansible, Prometheus, Grafana, Vault, Nginx, ELK
+EOF
+
+
