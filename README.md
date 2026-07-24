@@ -1,4 +1,4 @@
-cat > README.md << 'EOF'
+
 # 🔍 DevOps Monitoring Platform
 
 ![CI](https://github.com/Duman-coder/devops-monitoring/actions/workflows/ci.yml/badge.svg)
@@ -102,6 +102,5 @@ CHECK_INTERVAL=30  # секунды
 
 - GitHub: [@Duman-coder](https://github.com/Duman-coder)
 - Стек: Linux, Python, Docker, Kubernetes, Terraform, Ansible, Prometheus, Grafana, Vault, Nginx, ELK
-EOF
 
 
