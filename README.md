@@ -15,6 +15,7 @@
 
 ## 🏗️ Архитектура
 
+**
 ping-monitor (Python)
 ↓
 Docker Compose / Kubernetes
@@ -22,6 +23,7 @@ Docker Compose / Kubernetes
 Prometheus (метрики) → Grafana (дашборды)
 ↓
 Nginx (reverse proxy)
+**
 
 ## 🛠️ Стек технологий
 
