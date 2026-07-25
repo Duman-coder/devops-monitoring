@@ -1,0 +1,78 @@
+---
+- name: Установка DevOps Monitoring Platform
+  hosts: local
+  become: yes
+
+  tasks:
+    - name: Обновить список пакетов
+      apt:
+        update_cache: yes
+
+    - name: Установить зависимости
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - git
+        state: present
+
+    - name: Создать папку для ключей Docker
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Добавить GPG ключ Docker
+      shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+        gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      args:
+        creates: /etc/apt/keyrings/docker.gpg
+
+    - name: Добавить репозиторий Docker
+      shell: |
+        echo "deb [arch=$(dpkg --print-architecture) \
+        signed-by=/etc/apt/keyrings/docker.gpg] \
+        https://download.docker.com/linux/ubuntu \
+        $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+        tee /etc/apt/sources.list.d/docker.list > /dev/null
+      args:
+        creates: /etc/apt/sources.list.d/docker.list
+
+    - name: Установить Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        update_cache: yes
+        state: present
+
+    - name: Запустить Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Клонировать репозиторий
+      git:
+        repo: https://github.com/Duman-coder/devops-monitoring.git
+        dest: /opt/devops-monitoring
+        force: yes
+
+    - name: Запустить проект
+      shell: docker compose up -d
+      args:
+        chdir: /opt/devops-monitoring
+
+    - name: Проверить статус
+      shell: docker compose ps
+      args:
+        chdir: /opt/devops-monitoring
+      register: result
+
+    - name: Показать результат
+      debug:
+        msg: "{{ result.stdout }}"
