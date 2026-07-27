@@ -21,13 +21,13 @@ def read_hosts(filename):
         return ["8.8.8.8", "1.1.1.1", "google.com"]
 
 def write_log(result):
-    log_file = "/app/logs/ping_results.json"
-    os.makedirs("/app/logs", exist_ok=True)
+    log_file = os.path.expanduser("~/logs/ping_results.json")
+    os.makedirs(os.path.expanduser("~/logs"), exist_ok=True)
     with open(log_file, "a") as f:
         f.write(json.dumps(result) + "\n")
 
 def main():
-    hosts = read_hosts("/app/hosts.txt")
+    hosts = read_hosts(os.path.expanduser("~/hosts.txt"))
     interval = int(os.getenv("CHECK_INTERVAL", "60"))
 
     print(f"Мониторинг запущен. Интервал: {interval}с", flush=True)
