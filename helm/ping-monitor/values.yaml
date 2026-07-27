@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: ping-monitor
+  tag: latest
+  pullPolicy: Never
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+env:
+  CHECK_INTERVAL: "30"
+
+hosts:
+  - 8.8.8.8
+  - 1.1.1.1
+  - google.com
+  - github.com
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+autoscaling:
+  enabled: false

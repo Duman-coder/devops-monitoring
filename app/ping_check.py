@@ -1,9 +1,28 @@
-
 import subprocess
 import datetime
 import json
 import os
 import time
+import urllib.request
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+
+def send_telegram(message):
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        return
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    data = json.dumps({
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message,
+        "parse_mode": "HTML"
+    }).encode()
+    req = urllib.request.Request(url, data=data)
+    req.add_header("Content-Type", "application/json")
+    try:
+        urllib.request.urlopen(req)
+    except Exception as e:
+        print(f"Telegram ошибка: {e}", flush=True)
 
 def check_host(host):
     result = subprocess.run(
@@ -29,9 +48,12 @@ def write_log(result):
 def main():
     hosts = read_hosts(os.path.expanduser("~/hosts.txt"))
     interval = int(os.getenv("CHECK_INTERVAL", "60"))
+    host_status = {host: True for host in hosts}
 
     print(f"Мониторинг запущен. Интервал: {interval}с", flush=True)
     print(f"Хосты: {hosts}", flush=True)
+
+    send_telegram("🚀 <b>Мониторинг запущен</b>\nОтслеживаю: " + ", ".join(hosts))
 
     while True:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -48,17 +70,22 @@ def main():
                 "status": "up" if status else "down"
             }
             write_log(result)
-            line = f"{'OK' if status else 'FAIL'} | {host}"
-            print(line, flush=True)
 
             if status:
+                print(f"OK | {host}", flush=True)
                 available += 1
+                if not host_status[host]:
+                    send_telegram(f"✅ <b>Хост восстановлен</b>\n🌐 {host}\n🕐 {now}")
+                host_status[host] = True
             else:
+                print(f"FAIL | {host}", flush=True)
                 unavailable += 1
+                if host_status[host]:
+                    send_telegram(f"🔴 <b>ХОСТ НЕДОСТУПЕН</b>\n🌐 {host}\n🕐 {now}")
+                host_status[host] = False
 
         print(f"Итого: {available} up, {unavailable} down", flush=True)
         time.sleep(interval)
 
 if __name__ == "__main__":
     main()
-PYEOF

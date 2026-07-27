@@ -15,13 +15,15 @@
 
 ## 🏗️ Архитектура
 
+```
 ping-monitor (Python)
-↓
+      ↓
 Docker Compose / Kubernetes
-↓
+      ↓
 Prometheus (метрики) → Grafana (дашборды)
-↓
+      ↓
 Nginx (reverse proxy)
+```
 
 ## 🛠️ Стек технологий
 
@@ -62,33 +64,37 @@ kubectl get all -n monitoring
 
 ## 📁 Структура проекта
 
+```
 devops-monitoring/
 ├── app/
-│ ├── ping_check.py
-│ ├── Dockerfile
-│ ├── hosts.txt
-│ └── requirements.txt
+│   ├── ping_check.py
+│   ├── Dockerfile
+│   ├── hosts.txt
+│   └── requirements.txt
 ├── k8s/
-│ ├── namespace.yaml
-│ ├── configmap.yaml
-│ ├── deployment.yaml
-│ └── service.yaml
+│   ├── namespace.yaml
+│   ├── configmap.yaml
+│   ├── deployment.yaml
+│   └── service.yaml
 ├── prometheus/
-│ └── prometheus.yml
+│   └── prometheus.yml
 ├── nginx/
-│ └── nginx.conf
+│   └── nginx.conf
 ├── .github/workflows/
-│ └── ci.yml
+│   └── ci.yml
 └── docker-compose.yml
+```
 
 ## ⚙️ Конфигурация
 
 Список хостов в файле `app/hosts.txt`:
 
+```
 8.8.8.8
 1.1.1.1
 google.com
 github.com
+```
 
 Интервал проверки:
 

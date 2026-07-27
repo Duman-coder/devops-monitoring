@@ -7,6 +7,8 @@ services:
       - ./app/hosts.txt:/app/hosts.txt
     environment:
       - CHECK_INTERVAL=30
+      - TELEGRAM_TOKEN=8904638973:AAGXTE_35CpvcRgv3uUesFkKdEb1KFM6m6E
+      - TELEGRAM_CHAT_ID=572022108
     restart: unless-stopped
 
   prometheus:
