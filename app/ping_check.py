@@ -33,11 +33,23 @@ def check_host(host):
     return result.returncode == 0
 
 def read_hosts(filename):
+    hosts = []
     try:
         with open(filename, "r") as f:
-            return [line.strip() for line in f if line.strip()]
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                if "," in line:
+                    parts = line.split(",")
+                    name = parts[0].strip()
+                    ip = parts[1].strip()
+                    hosts.append({"name": name, "ip": ip})
+                else:
+                    hosts.append({"name": line, "ip": line})
     except FileNotFoundError:
-        return ["8.8.8.8", "1.1.1.1", "google.com"]
+        hosts = [{"name": "8.8.8.8", "ip": "8.8.8.8"}]
+    return hosts
 
 def write_log(result):
     log_file = os.path.expanduser("~/logs/ping_results.json")
@@ -46,14 +58,13 @@ def write_log(result):
         f.write(json.dumps(result) + "\n")
 
 def main():
-    hosts = read_hosts(os.path.expanduser("~/hosts.txt"))
+    hosts_file = os.path.expanduser("~/hosts.txt")
+    hosts = read_hosts(hosts_file)
     interval = int(os.getenv("CHECK_INTERVAL", "60"))
-    host_status = {host: True for host in hosts}
+    host_status = {h["ip"]: True for h in hosts}
 
-    print(f"Мониторинг запущен. Интервал: {interval}с", flush=True)
-    print(f"Хосты: {hosts}", flush=True)
-
-    send_telegram("🚀 <b>Мониторинг запущен</b>\nОтслеживаю: " + ", ".join(hosts))
+    print(f"Мониторинг запущен. Устройств: {len(hosts)}, интервал: {interval}с", flush=True)
+    send_telegram(f"🚀 <b>Мониторинг запущен</b>\nУстройств: {len(hosts)}\nИнтервал: {interval}с")
 
     while True:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -61,30 +72,51 @@ def main():
 
         available = 0
         unavailable = 0
+        newly_down = []
+        newly_up = []
 
-        for host in hosts:
-            status = check_host(host)
+        for h in hosts:
+            name = h["name"]
+            ip = h["ip"]
+            status = check_host(ip)
+
             result = {
                 "timestamp": now,
-                "host": host,
+                "name": name,
+                "host": ip,
                 "status": "up" if status else "down"
             }
             write_log(result)
 
             if status:
-                print(f"OK | {host}", flush=True)
                 available += 1
-                if not host_status[host]:
-                    send_telegram(f"✅ <b>Хост восстановлен</b>\n🌐 {host}\n🕐 {now}")
-                host_status[host] = True
+                if not host_status.get(ip, True):
+                    newly_up.append(f"✅ {name} ({ip})")
+                host_status[ip] = True
             else:
-                print(f"FAIL | {host}", flush=True)
                 unavailable += 1
-                if host_status[host]:
-                    send_telegram(f"🔴 <b>ХОСТ НЕДОСТУПЕН</b>\n🌐 {host}\n🕐 {now}")
-                host_status[host] = False
+                if host_status.get(ip, True):
+                    newly_down.append(f"🔴 {name} ({ip})")
+                host_status[ip] = False
 
         print(f"Итого: {available} up, {unavailable} down", flush=True)
+
+        if newly_down:
+            msg = f"🔴 <b>ХОСТЫ НЕДОСТУПНЫ</b>\n🕐 {now}\n\n"
+            msg += "\n".join(newly_down)
+            send_telegram(msg)
+
+        if newly_up:
+            msg = f"✅ <b>ХОСТЫ ВОССТАНОВЛЕНЫ</b>\n🕐 {now}\n\n"
+            msg += "\n".join(newly_up)
+            send_telegram(msg)
+
+        if unavailable > 0:
+            down_hosts = [h for h in hosts if not host_status.get(h["ip"], True)]
+            print("Недоступны:", flush=True)
+            for h in down_hosts:
+                print(f"  ✗ {h['name']} ({h['ip']})", flush=True)
+
         time.sleep(interval)
 
 if __name__ == "__main__":
